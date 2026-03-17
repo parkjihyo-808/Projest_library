@@ -1,10 +1,11 @@
 package com.busanit501.project_library.repository;
 
 import com.busanit501.project_library.domain.Event;
+import org.springframework.data.domain.Page; // 추가
+import org.springframework.data.domain.Pageable; // 추가
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
-    // 카테고리별로 리스트 가져오는 기능 추가
-    List<Event> findByCategory(String category);
+    // Pageable을 파라미터로 받고 리턴은 Page로!
+    Page<Event> findByCategory(String category, Pageable pageable);
 }

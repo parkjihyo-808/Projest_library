@@ -6,6 +6,8 @@ import com.busanit501.project_library.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,16 +36,15 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventDTO> getAll() {
-        return eventRepository.findAll().stream()
-                .map(event -> modelMapper.map(event, EventDTO.class))
-                .collect(Collectors.toList());
+    public Page<EventDTO> getList(Pageable pageable) {
+        Page<Event> result = eventRepository.findAll(pageable);
+        return result.map(event -> modelMapper.map(event, EventDTO.class));
     }
 
     @Override
-    public List<EventDTO> getLecturesByCategory(String category) {
-        return eventRepository.findByCategory(category).stream()
-                .map(event -> modelMapper.map(event, EventDTO.class))
-                .collect(Collectors.toList());
+    public Page<EventDTO> getLecturesByCategory(String category, Pageable pageable) {
+        // 카테고리별 페이징 조회
+        Page<Event> result = eventRepository.findByCategory(category, pageable);
+        return result.map(event -> modelMapper.map(event, EventDTO.class));
     }
 }
