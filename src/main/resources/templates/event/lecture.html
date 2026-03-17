@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>강좌·세미나 | 도서관</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --sidebar-brown: #a68b6d;
+            --border-color: #dee2e6;
+            --text-gray: #666666;
+            --light-bg: #f8f9fa;
+        }
+        body { font-family: "Pretendard", sans-serif; margin: 0; color: #333; }
+        .wrapper { display: flex; min-height: 100vh; }
+
+        /* 사이드바 */
+        .sidebar { min-width: 260px; border-right: 1px solid #333; background-color: #fff; }
+        .sidebar-title { padding: 25px 20px; font-size: 20px; font-weight: bold; border-bottom: 1px solid #333; }
+        .list-group-item { padding: 18px 20px; border: none; border-bottom: 1px solid #f0f0f0; font-size: 15px; }
+        .list-group-item.active { background-color: var(--sidebar-brown) !important; color: white !important; }
+
+        /* 메인 콘텐츠 */
+        .main-content { flex-grow: 1; padding: 60px 80px; background-color: #fff; }
+        h2 { font-size: 28px; font-weight: 700; margin-bottom: 30px; letter-spacing: -1px; }
+
+        /* [추가] 검색 및 필터 영역 */
+        .search-container {
+            background-color: var(--light-bg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* 카드 리스트 디자인 */
+        .lecture-card {
+            display: flex;
+            align-items: center;
+            padding: 25px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .lecture-card:hover { background-color: #fcfcfc; }
+
+        /* 상태 영역 */
+        .status-area { min-width: 120px; text-align: center; }
+        .status-badge {
+            display: inline-block;
+            min-width: 70px;
+            padding: 4px 10px;
+            border-radius: 2px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .status-ready { border: 1px solid var(--primary-blue); color: var(--primary-blue); }
+        .status-ing { background-color: var(--primary-blue); color: #fff; }
+        .status-end { background-color: #eee; color: #888; border: 1px solid #ddd; }
+
+        /* 정보 영역 */
+        .info-area { flex-grow: 1; padding-left: 20px; }
+        .lecture-title {
+            font-size: 19px;
+            font-weight: 600;
+            color: #222;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .lecture-title:hover { text-decoration: underline; color: var(--primary-blue); }
+        .lecture-meta { font-size: 14px; color: var(--text-gray); }
+        .lecture-meta span { margin-right: 25px; }
+
+        /* 신청 인원 영역 */
+        .etc-area { min-width: 150px; text-align: right; font-size: 14px; color: #777; }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="sidebar d-none d-md-block">
+        <div class="sidebar-title">열린공간</div>
+        <div class="list-group list-group-flush">
+            <a th:href="@{/event/list}" class="list-group-item list-group-item-action">이달의 행사</a>
+            <a th:href="@{/event/lecture}" class="list-group-item list-group-item-action active">강좌·세미나</a>
+            <a href="#" class="list-group-item list-group-item-action">주말 극장</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h2>강좌·세미나</h2>
+
+        <div class="search-container">
+            <select class="form-select w-auto"><option>전체</option></select>
+            <input type="text" class="form-control w-50" placeholder="검색어를 입력해주세요.">
+            <button class="btn btn-dark px-4">보기</button>
+        </div>
+
+        <div style="border-top: 2px solid var(--primary-blue); margin-bottom: 0;"></div>
+
+        <div th:each="lecture : ${lectureList}" class="lecture-card">
+            <div class="status-area">
+                <span th:if="${lecture.status == '진행중'}" class="status-badge status-ing">진행중</span>
+                <span th:if="${lecture.status == '예정'}" class="status-badge status-ready">예정</span>
+                <span th:if="${lecture.status == '마감'}" class="status-badge status-end">마감</span>
+            </div>
+
+            <div class="info-area">
+                <a th:href="@{/event/read(id=${lecture.id})}" class="lecture-title" th:text="${lecture.title}">2026년 3월 『월간 인문학을 만나다』</a>
+                <div class="lecture-meta">
+                    <span>접수기간: <span th:text="${#temporals.format(lecture.eventDate, 'yyyy.MM.dd')}">2026.03.20</span></span>
+                    <span>장소: <span th:text="${lecture.place}">4층 다목적홀</span></span>
+                </div>
+            </div>
+
+            <div class="etc-area">
+                <span>신청자 <b class="text-primary">27</b>/무제한</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
