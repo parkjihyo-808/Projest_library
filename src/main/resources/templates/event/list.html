@@ -75,7 +75,8 @@
         <div class="list-group list-group-flush">
             <a th:href="@{/event/list}" class="list-group-item list-group-item-action active">이달의 행사</a>
             <a th:href="@{/event/lecture}" class="list-group-item list-group-item-action">강좌·세미나</a>
-            <a href="#" class="list-group-item list-group-item-action">주말 극장</a>
+
+            <a th:href="@{/event/cinema}" class="list-group-item list-group-item-action">주말 극장</a>
         </div>
     </div>
 
@@ -141,22 +142,27 @@
         const calendarEl = document.getElementById('calendar');
         const eventData = /*[[${dtoList}]]*/ [];
 
-        const events = eventData.map(dto => ({
-            id: dto.id,
-            title: (dto.category === 'G') ? '강좌' : dto.title,
-            start: dto.eventDate,
-            extendedProps: {
-                category: dto.category,
-                content: dto.content,
-                place: dto.place,
-                realTitle: dto.title
-            }
-        }));
+        const events = eventData
+            .map(dto => ({
+                id: dto.id,
+                title: (dto.category === 'G') ? '강좌' : dto.title,
+                start: dto.eventDate,
+                extendedProps: {
+                    category: dto.category,
+                    content: dto.content,
+                    place: dto.place,
+                    realTitle: dto.title
+                }
+            }));
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             locale: 'ko',
             height: 'auto',
+            // [추가] 이번 달 날짜가 아닌 것들은 아예 보이지 않게 설정!
+            showNonCurrentDates: false,
+            // [추가] 달력이 항상 6줄이 아니라, 필요한 줄 수만큼만 생기도록 설정!
+            fixedWeekCount: false,
             headerToolbar: { left: 'prev', center: 'title', right: 'next' },
             titleFormat: { year: 'numeric', month: '2-digit' },
             events: events,
@@ -178,16 +184,14 @@
                         let dateNum = d.getDate();
 
                         if (day === 1) { // 월요일
-                            dynamicEvents.push({ start: dateStr, title: '휴관', extendedProps: { category: 'F' } });
+                            dynamicEvents.push({start: dateStr, title: '휴관', extendedProps: {category: 'F'}});
                         } else if (day >= 2 && day <= 4) { // 화~목
-                            dynamicEvents.push({ start: dateStr, title: '행사', extendedProps: { category: 'E' } });
+                            dynamicEvents.push({start: dateStr, title: '행사', extendedProps: {category: 'E'}});
                         } else if (day === 5) { // 금요일 (셋째 주 제외)
                             let isThirdFriday = (dateNum >= 15 && dateNum <= 21);
                             if (!isThirdFriday) {
-                                dynamicEvents.push({ start: dateStr, title: '행사', extendedProps: { category: 'E' } });
+                                dynamicEvents.push({start: dateStr, title: '행사', extendedProps: {category: 'E'}});
                             }
-                        } else if (day === 6) { // 토요일
-                            dynamicEvents.push({ start: dateStr, title: '주말 극장', extendedProps: { category: 'M' } });
                         }
                     }
                     successCallback(dynamicEvents);
